@@ -6,7 +6,7 @@ const serviceAccount = require('../firebase-credentials.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
-2
+
 exports.processNewMessage = functions.firestore
   .document('Conversations/{conversationId}/Messages/{messageId}')
   .onCreate((snapshot, context) => {
