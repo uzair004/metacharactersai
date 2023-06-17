@@ -2,10 +2,11 @@
 
 // User schema
 class User {
-    constructor(userId, username, email) {
+    constructor(userId, username, email, name) {
       this.userId = userId;
       this.username = username;
       this.email = email;
+      this.name = name
     }
   }
   
@@ -30,11 +31,12 @@ class User {
   
   // Message schema
   class Message {
-    constructor(messageId, role, content, timestamp) {
+    constructor(messageId, role, content, timestamp, replyTo) {
       this.messageId = messageId;
       this.role = role;
       this.content = content;
       this.timestamp = timestamp;
+      this.replyTo = replyTo
     }
   }
   
