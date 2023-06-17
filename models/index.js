@@ -30,10 +30,10 @@ class User {
   
   // Message schema
   class Message {
-    constructor(messageId, role, text, timestamp) {
+    constructor(messageId, role, content, timestamp) {
       this.messageId = messageId;
       this.role = role;
-      this.text = text;
+      this.content = content;
       this.timestamp = timestamp;
     }
   }
