@@ -14,7 +14,7 @@ exports.processNewMessage = functions.firestore
     const isSystemGenerated = newMessageData.isSystemGenerated || false;
 
     // Example:
-    console.log('New message:', newMessageData);
+    console.log('New message:', newMessageData)
 
     if (isSystemGenerated) {
       // This message is system-generated, no further processing needed
@@ -28,7 +28,11 @@ exports.processNewMessage = functions.firestore
 
     // Set a flag indicating that the next message will be system-generated
     const nextMessageData = {
-      isSystemGenerated: true
+      isSystemGenerated: true,
+      messageId: Math.random() * 1000,
+      role: "assistant",
+      content: 'I am elon musk',
+      timestamp: new Date()
     };
 
     // Generate the response using the ChatGPT API
