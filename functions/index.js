@@ -51,7 +51,29 @@ exports.processNewMessage = functions.firestore
     // Get the prompt attribute value from the model document
     const systemPrompt = modelDoc.data().prompt;
 
-    const reply = await generateChatReply(newMessageData.content, [], systemPrompt)
+    // Retrieve the latest 5 messages from the Messages subcollection of the same conversation
+    const conversationId = context.params.conversationId;
+    const messagesRef = admin.firestore().collection('Conversations').doc(conversationId).collection('Messages');
+    const querySnapshot = await messagesRef.orderBy('timestamp', 'desc').limit(5).get();
+
+    let previousConversation = []
+    
+    // Extract the role and content attributes from the messages
+    previousConversation = querySnapshot.docs.forEach((doc) => {
+      const messageData = doc.data();
+
+      const {role, content} = messageData
+
+        if(role !== 'system') {
+          previousConversation.push({
+            role,
+            content
+          })
+        }
+    });
+
+
+    const reply = await generateChatReply(newMessageData.content, previousConversation, systemPrompt)
 
     // Set a flag indicating that the next message will be system-generated
     const nextMessageData = {
@@ -63,10 +85,6 @@ exports.processNewMessage = functions.firestore
       replyTo: newMessageData.messageId 
     };
 
-    // Generate the response using the ChatGPT API
-    // Insert the response as a new message in the Messages subcollection
-    const conversationId = context.params.conversationId;
-    const messagesRef = admin.firestore().collection('Conversations').doc(conversationId).collection('Messages');
-    
+    // Insert the response as a new message in the Messages subcollection    
     return messagesRef.add(nextMessageData);
   });
