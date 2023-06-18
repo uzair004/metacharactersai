@@ -31,12 +31,13 @@ class User {
   
   // Message schema
   class Message {
-    constructor(messageId, role, content, timestamp, replyTo) {
+    constructor(messageId, role, content, timestamp, replyTo, modelId) {
       this.messageId = messageId;
       this.role = role;
       this.content = content;
       this.timestamp = timestamp;
       this.replyTo = replyTo
+      this.modelId = this.modelId
     }
   }
   
