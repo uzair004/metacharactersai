@@ -37,7 +37,7 @@ class User {
       this.content = content;
       this.timestamp = timestamp;
       this.replyTo = replyTo
-      this.modelId = this.modelId
+      this.modelId = modelId
     }
   }
   
