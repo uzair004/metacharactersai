@@ -71,9 +71,6 @@ exports.processNewMessage = functions.firestore
         }
     });
 
-    console.log('previousconverasation: ', previousConversation)
-
-
     const reply = await generateChatReply(content, previousConversation, systemPrompt)
 
     // Set a flag indicating that the next message will be system-generated
