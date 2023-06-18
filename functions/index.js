@@ -13,30 +13,30 @@ exports.processNewMessage = functions.firestore
   .document('Conversations/{conversationId}/Messages/{messageId}')
   .onCreate(async (snapshot, context) => {
     const newMessageData = snapshot.data();
-    const isSystemGenerated = newMessageData.isSystemGenerated || false;
+
+    const { isSystemGenerated, modelId, content, messageId } = newMessageData
+    const { conversationId } = context.params
 
     if (isSystemGenerated) {
       // This message is system-generated, no further processing needed
       return null;
     }
 
-    if(!newMessageData.modelId) {
+    if(!modelId) {
       console.error('modelId not found in inserted message')
       return null
     }
 
-    if(!newMessageData.content) {
+    if(!content) {
       console.error('content missing in message')
       return null
     }
 
-    if(!newMessageData.messageId) {
+    if(!messageId) {
       console.error('messageId missing in message')
       return null
     }
 
-    // Fetch the modelId from the new message data
-    const modelId = newMessageData.modelId;
 
     // Retrieve the model reference from the Models collection using modelId
     const modelRef = admin.firestore().collection('Models').doc(modelId);
@@ -52,19 +52,18 @@ exports.processNewMessage = functions.firestore
     const systemPrompt = modelDoc.data().prompt;
 
     // Retrieve the latest 5 messages from the Messages subcollection of the same conversation
-    const conversationId = context.params.conversationId;
     const messagesRef = admin.firestore().collection('Conversations').doc(conversationId).collection('Messages');
     const querySnapshot = await messagesRef.orderBy('timestamp', 'desc').limit(5).get();
 
     let previousConversation = []
     
     // Extract the role and content attributes from the messages
-    previousConversation = querySnapshot.docs.forEach((doc) => {
+    querySnapshot.docs.forEach((doc) => {
       const messageData = doc.data();
 
-      const {role, content} = messageData
+      const { role, content } = messageData
 
-        if(role !== 'system') {
+        if(role && content && role !== 'system') {
           previousConversation.push({
             role,
             content
@@ -72,8 +71,10 @@ exports.processNewMessage = functions.firestore
         }
     });
 
+    console.log('previousconverasation: ', previousConversation)
 
-    const reply = await generateChatReply(newMessageData.content, previousConversation, systemPrompt)
+
+    const reply = await generateChatReply(content, previousConversation, systemPrompt)
 
     // Set a flag indicating that the next message will be system-generated
     const nextMessageData = {
@@ -82,8 +83,8 @@ exports.processNewMessage = functions.firestore
       role: "assistant",
       content: reply,
       timestamp: new Date().getTime(),
-      replyTo: newMessageData.messageId,
-      modelId: newMessageData.modelId
+      replyTo: messageId,
+      modelId: modelId
     };
 
     // Insert the response as a new message in the Messages subcollection    
