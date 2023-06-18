@@ -82,7 +82,8 @@ exports.processNewMessage = functions.firestore
       role: "assistant",
       content: reply,
       timestamp: new Date().getTime(),
-      replyTo: newMessageData.messageId 
+      replyTo: newMessageData.messageId,
+      modelId: newMessageData.modelId
     };
 
     // Insert the response as a new message in the Messages subcollection    
