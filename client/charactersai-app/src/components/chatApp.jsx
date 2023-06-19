@@ -52,6 +52,7 @@ function ChatApp({ modelName, modelId }) {
 
     await messagesRef.doc(newMessage.messageId).set(newMessage);
 
+    setMessages((prevMessages) => [...prevMessages, newMessage]); // Update the messages state with the new message
     setMessage('');
   };
 
@@ -68,7 +69,12 @@ function ChatApp({ modelName, modelId }) {
       <div className="row conversation">
         <div className="col-12">
           {messages.map((msg) => (
-            <p key={msg.messageId}>{msg.content}</p>
+            <div
+              key={msg.messageId}
+              className={`message ${msg.role === 'user' ? 'user' : 'other'}`}
+            >
+              <p>{msg.content}</p>
+            </div>
           ))}
         </div>
       </div>
