@@ -109,8 +109,8 @@ h1.main-heading {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #000000; /* Change the background color to black */
-  color: #ffffff; /* Change the text color to white */
+  /*background-color: #ffffff; /* Change the background color to black */
+  /*color: #000000; 
 }
 
 .header {
