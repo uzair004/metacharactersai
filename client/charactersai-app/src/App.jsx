@@ -1,24 +1,25 @@
 /* eslint-disable no-unused-vars */
+/* App.jsx */
+
 import React, { useState } from 'react';
 import ModelList from './components/ModelList';
 import ChatApp from './components/chatApp';
 
 function App() {
-  const [currentModel, setCurrentModel] = useState(null); // Track the current model
+  const [currentModel, setCurrentModel] = useState(null);
+  const [modelId, setModelId] = useState(null);
 
-  const handleModelClick = (modelName) => {
-    setCurrentModel(modelName); // Set the current model when a model card is clicked
+  const handleModelClick = (modelName, modelId) => {
+    setCurrentModel(modelName);
+    setModelId(modelId);
   };
 
   return (
     <div>
       {currentModel ? (
-        <ChatApp modelName={currentModel} /> // Render ChatApp if there is a current model
+        <ChatApp modelName={currentModel} modelId={modelId} />
       ) : (
-        <>
-          <h1 className="text-center main-heading">Characters AI chatApp</h1> {/* Main Heading */}
-          <ModelList onModelClick={handleModelClick} /> {/* Render ModelList if there is no current model */}
-        </>
+        <ModelList onModelClick={handleModelClick} />
       )}
     </div>
   );

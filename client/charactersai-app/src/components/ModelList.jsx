@@ -1,5 +1,7 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+/* ModelList.jsx */
+
 import React, { useEffect, useState } from 'react';
 import { firestore } from '../firebase';
 import defaultAvatar from '../assets/default-avatar.jpeg';
@@ -11,10 +13,9 @@ function ModelList({ onModelClick }) {
     const fetchModels = async () => {
       const modelsRef = firestore.collection('Models');
       const snapshot = await modelsRef.get();
-      const modelsData = snapshot.docs.map(doc => {
+      const modelsData = snapshot.docs.map((doc) => {
         const model = { modelId: doc.id, ...doc.data() };
         if (!model.pic) {
-          // Use default avatar image if pic is not available
           model.pic = defaultAvatar;
         }
         return model;
@@ -27,8 +28,12 @@ function ModelList({ onModelClick }) {
 
   return (
     <div className="model-list">
-      {models.map(model => (
-        <div key={model.modelId} className="model-card"  onClick={() => onModelClick(model.name)}>
+      {models.map((model) => (
+        <div
+          key={model.modelId}
+          className="model-card"
+          onClick={() => onModelClick(model.name, model.modelId)} // Pass both modelName and modelId as arguments
+        >
           <img src={model.pic} alt={model.name} />
           <p>{model.name}</p>
         </div>
