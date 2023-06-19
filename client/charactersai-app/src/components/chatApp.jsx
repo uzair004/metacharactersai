@@ -28,13 +28,13 @@ function ChatApp({ modelName, modelId }) {
       return;
     }
 
-    const conversationRef = firestore.collection('Conversations').doc(modelId);
+    const conversationRef = firestore.collection('Conversations').doc(uuidv4()); // Use a random UUID for the conversationId
     const messagesRef = conversationRef.collection('Messages');
 
     const conversationSnapshot = await conversationRef.get();
     if (!conversationSnapshot.exists) {
       const newConversation = {
-        conversationId: uuidv4(),
+        conversationId: conversationRef.id, // Use the conversation document ID as the conversationId
         modelId: modelId,
         userId: '123',
       };
