@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { firestore } from '../firebase';
 import defaultAvatar from '../assets/default-avatar.jpeg';
 
-function ModelList() {
+function ModelList({ onModelClick }) {
   const [models, setModels] = useState([]);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ function ModelList() {
   return (
     <div className="model-list">
       {models.map(model => (
-        <div key={model.modelId} className="model-card">
+        <div key={model.modelId} className="model-card"  onClick={() => onModelClick(model.name)}>
           <img src={model.pic} alt={model.name} />
           <p>{model.name}</p>
         </div>

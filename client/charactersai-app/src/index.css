@@ -104,3 +104,80 @@ h1.main-heading {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.chat-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000; /* Change the background color to black */
+  color: #ffffff; /* Change the text color to white */
+}
+
+.header {
+  padding: 1rem;
+  background-color: #ffffff; /* Change the background color to white */
+  color: #000000; /* Change the text color to black */
+  border-bottom: 1px solid #dee2e6;
+}
+
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.model-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.conversation {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.input-container {
+  padding: 1rem;
+  background-color: #ffffff;
+}
+
+.input-field {
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.send-button {
+  padding: 0.5rem 1rem;
+}
+
+/* Additional Bootstrap classes for responsiveness */
+
+@media (max-width: 576px) {
+  .header .col-2,
+  .header .col-10,
+  .input-container .col-10,
+  .input-container .col-2 {
+    padding: 0;
+  }
+  
+  .header .col-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .header .col-10 {
+    display: flex;
+    align-items: center;
+  }
+  
+  .conversation,
+  .input-container {
+    padding: 0.5rem;
+  }
+}
