@@ -66,7 +66,7 @@ exports.processNewMessage = functions.firestore
       .limit(5)
       .get();
 
-    const previousConversation = [];
+    let previousConversation = [];
 
     // Extract the role and content attributes from the messages
     querySnapshot.forEach((doc) => {
@@ -79,6 +79,8 @@ exports.processNewMessage = functions.firestore
         });
       }
     });
+
+    previousConversation = previousConversation.reverse();
 
     const reply = await generateChatReply(content, previousConversation, systemPrompt);
 
