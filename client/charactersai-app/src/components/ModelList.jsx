@@ -28,6 +28,7 @@ function ModelList({ onModelClick }) {
 
   return (
     <div className="model-list">
+      <h1 className='main-heading'>Characters AI ChatApp</h1>
       {models.map((model) => (
         <div
           key={model.modelId}
