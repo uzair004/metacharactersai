@@ -5,7 +5,7 @@
   },
   "hosting": {
     "site": "metacharacters",
-    "public": "public"
+    "public": "client/charactersai-app/dist"
   },
   "emulators": {
     "functions": {
