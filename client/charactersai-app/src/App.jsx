@@ -15,7 +15,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className='top-container'>
       {currentModel ? (
         <ChatApp modelName={currentModel} modelId={modelId} />
       ) : (
