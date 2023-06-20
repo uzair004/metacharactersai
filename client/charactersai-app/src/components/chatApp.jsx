@@ -12,15 +12,15 @@ function ChatApp({ modelName, modelId }) {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      const conversationRef = firestore.collection('Conversations').doc(modelId);
+    const conversationRef = firestore.collection('Conversations').doc(modelId);
+    const messagesRef = conversationRef.collection('Messages');
 
-      const snapshot = await conversationRef.collection('Messages').get();
+    const unsubscribe = messagesRef.orderBy('timestamp').onSnapshot((snapshot) => {
       const messageData = snapshot.docs.map((doc) => doc.data());
       setMessages(messageData);
-    };
+    });
 
-    fetchMessages();
+    return () => unsubscribe(); // Cleanup the subscription when the component unmounts
   }, [modelId]);
 
   const handleMessageSend = async () => {
@@ -28,19 +28,8 @@ function ChatApp({ modelName, modelId }) {
       return;
     }
 
-    const conversationRef = firestore.collection('Conversations').doc(uuidv4()); // Use a random UUID for the conversationId
+    const conversationRef = firestore.collection('Conversations').doc(modelId);
     const messagesRef = conversationRef.collection('Messages');
-
-    const conversationSnapshot = await conversationRef.get();
-    if (!conversationSnapshot.exists) {
-      const newConversation = {
-        conversationId: conversationRef.id, // Use the conversation document ID as the conversationId
-        modelId: modelId,
-        userId: '123',
-      };
-
-      await conversationRef.set(newConversation);
-    }
 
     const newMessage = {
       messageId: uuidv4(),
@@ -52,7 +41,6 @@ function ChatApp({ modelName, modelId }) {
 
     await messagesRef.doc(newMessage.messageId).set(newMessage);
 
-    setMessages((prevMessages) => [...prevMessages, newMessage]); // Update the messages state with the new message
     setMessage('');
   };
 
