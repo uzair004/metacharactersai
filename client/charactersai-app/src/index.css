@@ -109,6 +109,8 @@ h1.main-heading {
   height: 100vh;
   width: 66%;
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   /*background-color: #ffffff; /* Change the background color to black */
   /*color: #000000; 
@@ -152,9 +154,14 @@ div.top-container {
   height: 100vh;
 }
 
+div.chat-header {
+  width: 50%;
+}
+
 .input-container {
   padding: 1rem;
   background-color: #ffffff;
+  width: 50%;
 }
 
 .input-field {

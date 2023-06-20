@@ -46,7 +46,7 @@ function ChatApp({ modelName, modelId }) {
 
   return (
     <div className="container-fluid chat-container">
-      <div className="row header">
+      <div className="row header chat-header">
         <div className="col-2">
           <img src={defaultAvatar} alt="Default Avatar" className="avatar" />
         </div>
