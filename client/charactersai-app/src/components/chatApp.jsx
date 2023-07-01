@@ -6,6 +6,8 @@ import React, { useState, useEffect } from 'react';
 import defaultAvatar from '../assets/default-avatar.jpeg';
 import { firestore, auth } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
+import firebase from 'firebase/compat/app';
+
 
 function ChatApp({ modelName, modelId }) {
   const [message, setMessage] = useState('');
@@ -14,32 +16,47 @@ function ChatApp({ modelName, modelId }) {
 
   useEffect(() => {
     const fetchConversation = async () => {
-      const userId = auth.currentUser?.uid;
+      if (!auth.currentUser || !auth.currentUser.uid) {
+        // User is not logged in, handle the scenario here
+        // Show a login with Google popup
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+          await auth.signInWithPopup(provider);
+          // After successful login, fetch the conversation
+          fetchConversation();
+        } catch (error) {
+          console.log(error);
+          // Handle login error
+        }
+        return;
+      }
 
+      const userId = auth.currentUser.uid;
       const conversationsRef = firestore.collection('Conversations');
       const query = conversationsRef.where('userId', '==', userId).where('modelId', '==', modelId);
-      const querySnapshot = await query.get();
 
-      if (querySnapshot.empty) {
-        // Create a new conversation document if it doesn't exist
-        const newConversation = {
-          userId: userId,
-          modelId: modelId,
-          conversationId: uuidv4(),
-        };
-
-        await conversationsRef.add(newConversation);
-      } else {
-        const conversation = querySnapshot.docs[0].data();
-        setConversationId(conversation.conversationId);
+      try {
+        const snapshot = await query.get();
+        if (snapshot.empty) {
+          // Conversation document doesn't exist, create a new one
+          const newConversationId = uuidv4();
+          await conversationsRef.doc(newConversationId).set({
+            userId: userId,
+            modelId: modelId,
+          });
+          setConversationId(newConversationId);
+        } else {
+          // Conversation document exists, get the conversationId from the first document in the snapshot
+          const conversationData = snapshot.docs[0].data();
+          setConversationId(conversationData.conversationId);
+        }
+      } catch (error) {
+        console.log(error);
+        // Handle error
       }
     };
 
     fetchConversation();
-
-    return () => {
-      // Cleanup or unsubscribe if needed
-    };
   }, [modelId]);
 
   useEffect(() => {
