@@ -4,16 +4,53 @@
 
 import React, { useState, useEffect } from 'react';
 import defaultAvatar from '../assets/default-avatar.jpeg';
-import { firestore } from '../firebase';
+import { firestore, auth } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 function ChatApp({ modelName, modelId }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [conversationId, setConversationId] = useState('');
 
   useEffect(() => {
-    const conversationRef = firestore.collection('Conversations').doc(modelId);
-    const messagesRef = conversationRef.collection('Messages');
+    const fetchConversation = async () => {
+      const userId = auth.currentUser?.uid;
+
+      const conversationsRef = firestore.collection('Conversations');
+      const query = conversationsRef.where('userId', '==', userId).where('modelId', '==', modelId);
+      const querySnapshot = await query.get();
+
+      if (querySnapshot.empty) {
+        // Create a new conversation document if it doesn't exist
+        const newConversation = {
+          userId: userId,
+          modelId: modelId,
+          conversationId: uuidv4(),
+        };
+
+        await conversationsRef.add(newConversation);
+      } else {
+        const conversation = querySnapshot.docs[0].data();
+        setConversationId(conversation.conversationId);
+      }
+    };
+
+    fetchConversation();
+
+    return () => {
+      // Cleanup or unsubscribe if needed
+    };
+  }, [modelId]);
+
+  useEffect(() => {
+    if (!conversationId) {
+      return;
+    }
+
+    const messagesRef = firestore
+      .collection('Conversations')
+      .doc(conversationId)
+      .collection('Messages');
 
     const unsubscribe = messagesRef.orderBy('timestamp').onSnapshot((snapshot) => {
       const messageData = snapshot.docs.map((doc) => doc.data());
@@ -21,15 +58,18 @@ function ChatApp({ modelName, modelId }) {
     });
 
     return () => unsubscribe(); // Cleanup the subscription when the component unmounts
-  }, [modelId]);
+  }, [conversationId]);
 
   const handleMessageSend = async () => {
     if (message.trim() === '') {
       return;
     }
 
-    const conversationRef = firestore.collection('Conversations').doc(modelId);
-    const messagesRef = conversationRef.collection('Messages');
+    const userId = auth.currentUser?.uid;
+    const messagesRef = firestore
+      .collection('Conversations')
+      .doc(conversationId)
+      .collection('Messages');
 
     const newMessage = {
       messageId: uuidv4(),
@@ -97,7 +137,7 @@ function ChatApp({ modelName, modelId }) {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default ChatApp;
