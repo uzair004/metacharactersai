@@ -82,6 +82,7 @@ button:focus-visible {
   align-items: center;
   width: calc(25% - 1rem); /* Adjust the width as needed */
   margin-bottom: 1rem;
+  cursor: pointer;
 }
 
 .model-card img {
@@ -171,6 +172,7 @@ div.chat-header {
 
 .send-button {
   padding: 0.5rem 1rem;
+  cursor: pointer;
 }
 
 /* Additional Bootstrap classes for responsiveness */
