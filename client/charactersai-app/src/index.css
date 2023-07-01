@@ -184,8 +184,7 @@ div.chat-header {
   width: 50%;
   background-color: #eeebeb;
   padding-top: .3rem;
-  padding-bottom: .3rem;
-
+  padding-bottom: .5rem;
 }
 
 .input-container {
@@ -229,4 +228,22 @@ div.chat-header {
   .input-container {
     padding: 0.5rem;
   }
+}
+
+@media(max-width: 1000px) {
+  .chat-container {
+    width: 100%;
+  }
+
+  .conversation {
+    width: 95vw;
+  }
+
+  .input-container {
+    width: 100%
+  }
+
+ div.chat-header {
+  width: 100%;
+ }
 }
