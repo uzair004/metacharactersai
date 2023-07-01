@@ -182,10 +182,14 @@ div.top-container {
 
 div.chat-header {
   width: 50%;
+  background-color: #eeebeb;
+  padding-top: .3rem;
+  padding-bottom: .3rem;
+
 }
 
 .input-container {
-  padding: 1rem;
+  padding: 2rem;
   background-color: #ffffff;
   width: 50%;
 }
