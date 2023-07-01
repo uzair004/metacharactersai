@@ -82,6 +82,10 @@ function ChatApp({ modelName, modelId }) {
       return;
     }
 
+    if(!auth.currentUser) {
+      return
+    }
+
     const userId = auth.currentUser?.uid;
     const messagesRef = firestore
       .collection('Conversations')
@@ -148,7 +152,7 @@ function ChatApp({ modelName, modelId }) {
           />
         </div>
         <div className="col-2 d-flex align-items-center">
-          <button className="btn btn-primary send-button" onClick={handleMessageSend}>
+          <button className="btn btn-primary send-button" onClick={handleMessageSend} disabled={!auth.currentUser}>
             Send
           </button>
         </div>
