@@ -36,6 +36,31 @@ h1 {
   line-height: 1.1;
 }
 
+.navbar {
+  display: flex;
+  width: 100vw;
+  border-bottom: 1px solid gray;
+  margin-left: .5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.navbar .sign-in-button {
+  margin-right: 1rem;
+}
+
+.navbar .welcome-user {
+  margin-right: .2rem
+}
+
+.navbar .welcome-user {
+  margin-right: .2rem
+}
+
+.navbar .signout-btn {
+  margin-right: 1rem;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

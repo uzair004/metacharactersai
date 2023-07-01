@@ -54,13 +54,13 @@ function App() {
   };
 
   return (
-    <div className='top-container'>
-      <header>
-        <h1>Chat App</h1>
+    <div className='wrapper'>
+      <header className='navbar'>
+        <h4>Meta Characters Chat</h4>
         {user ? (
           <div className='user-info'>
-            <span>Welcome, {user.displayName}</span>
-            <button onClick={handleSignOut}>Sign Out</button>
+            <span className='welcome-user'>Welcome, {user.displayName}</span>
+            <button className='signout-btn' onClick={handleSignOut}>Sign Out</button>
           </div>
         ) : (
           <button className='sign-in-button' onClick={handleSignInWithGoogle}>
@@ -68,12 +68,17 @@ function App() {
           </button>
         )}
       </header>
+
+    <div className='top-container'>
+        
       {currentModel ? (
         <ChatApp modelName={currentModel} modelId={modelId} />
       ) : (
         <ModelList onModelClick={handleModelClick} />
       )}
     </div>
+    </div>
+
   );
 }
 
