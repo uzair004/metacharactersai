@@ -14,13 +14,44 @@ exports.processNewMessage = functions.firestore
   .onCreate(async (snapshot, context) => {
     const newMessageData = snapshot.data();
 
-    const { isSystemGenerated, modelId, content, messageId } = newMessageData;
+    const { isSystemGenerated, modelId, content, messageId, userId } = newMessageData;
     const { conversationId } = context.params;
 
     if (isSystemGenerated) {
       // This message is system-generated, no further processing needed
       return null;
     }
+
+    const userQuerySnapshot = await admin.firestore()
+      .collection('Users')
+      .where('userId', '==', userId)
+      .limit(1)
+      .get()
+
+
+    if(userQuerySnapshot.empty) {
+      console.error(`user not found: userId: ${userId}`);
+      return null;
+    }
+
+    const userDoc = userQuerySnapshot.docs[0];
+
+    let { tokenCount, maxTokens } = userDoc.data();
+
+    // user ran out of tokens
+    if(typeof tokenCount === 'number' && typeof maxTokens === 'number' && maxTokens - tokenCount < 0) {
+      console.error(`user doesn't have enough tokens, userId: ${userId}, tokenCount: ${tokenCount}, max: ${maxTokens}`)
+      return null
+    }
+
+    // get user by userId
+    // check if user.tokenCount exist
+      // if not then its new user
+      // add tokenCount = 0 & maxTokens = 1000
+    // otherwise if maxToken - tokenCount > 0
+      // proceed with generate reply
+      // at end get number of tokens utilized from chatgpt api response
+      // add that to user.tokenCount
 
     if (!modelId) {
       console.error('modelId not found in inserted message');
@@ -82,9 +113,9 @@ exports.processNewMessage = functions.firestore
 
     previousConversation = previousConversation.reverse();
 
-    const reply = await generateChatReply(content, previousConversation, systemPrompt);
+    const {assistantReply: reply, tokenUsed} = await generateChatReply(content, previousConversation, systemPrompt);
 
-    console.log({ reply });
+    console.log({reply, tokenUsed})
 
     // Set a flag indicating that the next message will be system-generated
     const nextMessageData = {
@@ -97,6 +128,18 @@ exports.processNewMessage = functions.firestore
       modelId: modelId
     };
 
-    // Insert the response as a new message in the Messages subcollection
-    return messagesRef.add(nextMessageData);
+    // update tokenCount from chatgpt
+    tokenCount !== undefined ? (tokenCount += tokenUsed) : 0;
+   
+    // new user
+    if (!maxTokens) {
+      // New user, add tokenCount & set maxTokens limit
+      maxTokens = 1000;
+    }
+
+    await Promise.all([
+      userDoc.ref.update({ tokenCount, maxTokens }),
+      messagesRef.add(nextMessageData)
+    ])
+
   });
