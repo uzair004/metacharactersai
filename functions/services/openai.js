@@ -24,29 +24,16 @@ async function generateChatReply(prompt, previousConversation, systemPrompt) {
     });
 
     const assistantReply = response.data.choices[0].message.content;
+    const tokenUsed = response.data.usage.total_tokens;
+
     console.log('Assistant Reply:', assistantReply);
 
-    return assistantReply;
+    return {assistantReply, tokenUsed};
   } catch (error) {
-    // console.error('Error:', error);
-    throw error;
+    console.error('Error:', error);
+    // throw error;
+    return {assistantReply: 'something went wrong', tokenUsed: 10}
   }
 }
-
-// Usage example:
-// const prompt = 'what is your full name?';
-// const previousConversation = [
-//   // { role: 'assistant', content: 'What are your plans for the future of Tesla?' },
-//   // Include previous messages from the conversation
-// ];
-
-
-// (async () => {
-//   try {
-//     await generateChatReply(prompt, previousConversation);
-//   }catch(e) {
-//     console.error(e.data)
-//   }
-// })();
 
 module.exports = { generateChatReply }
