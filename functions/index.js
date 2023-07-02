@@ -44,15 +44,6 @@ exports.processNewMessage = functions.firestore
       return null
     }
 
-    // get user by userId
-    // check if user.tokenCount exist
-      // if not then its new user
-      // add tokenCount = 0 & maxTokens = 1000
-    // otherwise if maxToken - tokenCount > 0
-      // proceed with generate reply
-      // at end get number of tokens utilized from chatgpt api response
-      // add that to user.tokenCount
-
     if (!modelId) {
       console.error('modelId not found in inserted message');
       return null;
