@@ -17,11 +17,8 @@ function ChatApp({ modelName, modelId }) {
   useEffect(() => {
     const fetchConversation = async () => {
       if (!auth.currentUser || !auth.currentUser.uid) {
-        // User is not logged in, handle the scenario here
-        // Show a login with Google popup
-        const provider = new firebase.auth.GoogleAuthProvider();
-        try {
-          await auth.signInWithPopup(provider);
+        try{
+          await handleSignInWithGoogle()
           // After successful login, fetch the conversation
           fetchConversation();
         } catch (error) {
@@ -55,6 +52,54 @@ function ChatApp({ modelName, modelId }) {
         // Handle error
       }
     };
+
+      // Function to handle sign-in with Google
+  const handleSignInWithGoogle = async () => {
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await auth.signInWithPopup(provider);
+      const { user } = result;
+  
+      const userRef = firestore.collection('Users').doc(user.uid);
+      const userSnapshot = await userRef.get();
+  
+      if (userSnapshot.exists) {
+        // User document already exists, retrieve the existing data
+        const existingData = userSnapshot.data();
+        // Merge the existing data with the new data
+        const updatedData = Object.assign({}, existingData, {
+          email: user.email,
+          name: user.displayName,
+          emailVerified: user.emailVerified,
+          isAnonymous: user.isAnonymous,
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          lastLoginAt: user.metadata?.lastLoginAt,
+          lastSignInTime: user.metadata?.lastSignInTime,
+          createdAt: user.metadata.createdAt,
+        });
+        // Update only the specific fields in the user document
+        await userRef.update(updatedData);
+      } else {
+        // User document doesn't exist, create a new document with the new data
+        await userRef.set({
+          userId: user.uid,
+          email: user.email,
+          name: user.displayName,
+          emailVerified: user.emailVerified,
+          isAnonymous: user.isAnonymous,
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          lastLoginAt: user.metadata?.lastLoginAt,
+          lastSignInTime: user.metadata?.lastSignInTime,
+          createdAt: user.metadata?.createdAt,
+        });
+      }
+  
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
     fetchConversation();
   }, [modelId]);
@@ -98,6 +143,7 @@ function ChatApp({ modelName, modelId }) {
       role: 'user',
       timestamp: new Date().getTime(),
       modelId: modelId,
+      userId,
     };
 
     await messagesRef.doc(newMessage.messageId).set(newMessage);

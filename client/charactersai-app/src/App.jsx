@@ -26,27 +26,49 @@ function App() {
       const provider = new firebase.auth.GoogleAuthProvider();
       const result = await auth.signInWithPopup(provider);
       const { user } = result;
-
-      // Add user to the Users collection in Firestore
-      await firestore.collection('Users').doc(user.uid).set({
-        userId: user.uid,
-        email: user.email,
-        name: user.displayName,
-        emailVerified: user.emailVerified,
-        isAnonymous: user.isAnonymous,
-        phoneNumber: user.phoneNumber,
-        photoURL: user.photoURL,
-        lastLoginAt: user.metadata?.lastLoginAt,
-        lastSignInTime: user.metadata?.lastSignInTime,
-        createdAt: user.metadata.createdAt,
-      });
-
+  
+      const userRef = firestore.collection('Users').doc(user.uid);
+      const userSnapshot = await userRef.get();
+  
+      if (userSnapshot.exists) {
+        // User document already exists, retrieve the existing data
+        const existingData = userSnapshot.data();
+        // Merge the existing data with the new data
+        const updatedData = Object.assign({}, existingData, {
+          email: user.email,
+          name: user.displayName,
+          emailVerified: user.emailVerified,
+          isAnonymous: user.isAnonymous,
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          lastLoginAt: user.metadata?.lastLoginAt,
+          lastSignInTime: user.metadata?.lastSignInTime,
+          createdAt: user.metadata.createdAt,
+        });
+        // Update only the specific fields in the user document
+        await userRef.update(updatedData);
+      } else {
+        // User document doesn't exist, create a new document with the new data
+        await userRef.set({
+          userId: user.uid,
+          email: user.email,
+          name: user.displayName,
+          emailVerified: user.emailVerified,
+          isAnonymous: user.isAnonymous,
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL,
+          lastLoginAt: user.metadata?.lastLoginAt,
+          lastSignInTime: user.metadata?.lastSignInTime,
+          createdAt: user.metadata.createdAt,
+        });
+      }
+  
       setUser(user);
     } catch (error) {
       console.log(error);
     }
   };
-
+  
   const handleSignOut = async () => {
     try {
       await auth.signOut();
