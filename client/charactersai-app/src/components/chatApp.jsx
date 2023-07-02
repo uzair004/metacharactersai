@@ -8,6 +8,10 @@ import { firestore, auth } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import firebase from 'firebase/compat/app';
 
+// TODO: handle tokens limit:
+  // dont allow to send msg when all tokens utilized, also display small text
+  // problem: auth.currentUser is not firestore doc, that is where we store tokensCount & maxTokens
+
 
 function ChatApp({ modelName, modelId }) {
   const [message, setMessage] = useState('');
