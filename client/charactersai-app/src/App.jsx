@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* App.jsx */
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import ModelList from './components/ModelList';
 import ChatApp from './components/chatApp';
 import firebase from 'firebase/compat/app';
@@ -10,7 +10,15 @@ import { auth, firestore } from './firebase'; // Import auth and firestore from 
 function App() {
   const [currentModel, setCurrentModel] = useState(null);
   const [modelId, setModelId] = useState(null);
-  const [user, setUser] = useState(null); // Add user state
+  const [user, setUser] = useState(auth.currentUser ? auth.currentUser : ''); // Add user state
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user); // Update the user state when auth.currentUser changes
+    });
+
+    return () => unsubscribe(); // Cleanup the subscription when the component unmounts
+  }, []);
 
   // Function to handle sign-in with Google
   const handleSignInWithGoogle = async () => {
