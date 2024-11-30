@@ -27,7 +27,12 @@ cd ../client/metacharacters-app
 npm install
 ```
 
-6. Serve your project:
+6. Start web app in dev mode
+```bash
+npm run dev
+```
+
+7. Serve your project:
 ```bash
 cd ../../
 firebase emulators:start
