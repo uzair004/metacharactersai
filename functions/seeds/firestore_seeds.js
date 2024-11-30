@@ -39,7 +39,7 @@ async function seedData() {
 
   // Add users to Firestore
   for (const user of users) {
-    await db.collection('users').doc(user.userId).set({
+    await db.collection('Users').doc(user.userId).set({
       username: user.username,
       email: user.email,
       name: user.name
@@ -48,7 +48,7 @@ async function seedData() {
 
   // Add models to Firestore
   for (const model of models) {
-    await db.collection('models').doc(model.modelId).set({
+    await db.collection('Models').doc(model.modelId).set({
       name: model.name,
       prompt: model.prompt,
       contextSize: model.contextSize
@@ -58,7 +58,7 @@ async function seedData() {
   // Add conversations to Firestore
   const conversationRefs = [];
   for (const conversation of conversations) {
-    const conversationRef = await db.collection('conversations').add({
+    const conversationRef = await db.collection('Conversations').add({
       userId: conversation.userId,
       modelId: conversation.modelId
     });
@@ -68,7 +68,7 @@ async function seedData() {
   // Add messages to Firestore
   for (let i = 0; i < messages.length; i++) {
     const conversationId = conversationRefs[Math.floor(i / 2)];
-    await db.collection('conversations').doc(conversationId).collection('messages').add({
+    await db.collection('Conversations').doc(conversationId).collection('Messages').add({
       role: messages[i].role,
       content: messages[i].content,
       timestamp: new Date(),
