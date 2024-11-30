@@ -16,8 +16,20 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-export const firestore = firebase.firestore();
-export const storage = firebase.storage();
-export const auth = firebase.auth();
+const firestore = firebase.firestore();
+const storage = firebase.storage();
+const auth = firebase.auth();
+
+// Use local emulators if running on localhost
+if (["127.0.0.1", "localhost"].includes(window.location.hostname)) {
+    console.log("Connecting to local emulators...");
+    firestore.useEmulator("localhost", 8080); // Firestore Emulator
+    auth.useEmulator("http://localhost:5003"); // Auth Emulator
+} else {
+    console.log("Using production Firebase services...");
+}
+
+export { firestore, storage, auth };
+
 
 
