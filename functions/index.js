@@ -5,9 +5,22 @@ const { generateChatReply } = require('./services/openai');
 
 // Initialize the Firebase Admin SDK with a service account
 const serviceAccount = require('./firebase-credentials.json');
+
+process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
+
+if (process.env.FIRESTORE_EMULATOR_HOST) {
+  console.log("Connecting to Firestore Emulator...");
+  admin.firestore().settings({
+    host: '127.0.0.1:8080',
+    ssl: false, // Don't use SSL for the emulator
+  });
+} else {
+  console.log("Connecting to production Firestore...");
+}
 
 exports.processNewMessage = functions.firestore
   .document('Conversations/{conversationId}/Messages/{messageId}')
